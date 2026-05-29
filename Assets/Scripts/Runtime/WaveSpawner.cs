@@ -14,16 +14,18 @@ public class WaveSpawner : MonoBehaviour
 
     IEnumerator SpawnWave()
     {
-        foreach (WaveEntry entry in wave.enemies)
+        foreach (WaveSpawn spawn in wave.spawns)
         {
-            for (int i = 0; i < entry.count; i++)
-            {
-                GameObject obj = Instantiate(entry.enemy.prefab, spawnPoint.position, Quaternion.identity);
-                Enemy enemy = obj.GetComponent<Enemy>();
-                enemy.Init(entry.enemy, pathPoints);
+            GameObject obj = Instantiate(
+                spawn.enemy.prefab,
+                spawnPoint.position,
+                Quaternion.identity
+            );
 
-                yield return new WaitForSeconds(entry.spawnInterval);
-            }
+            Enemy enemy = obj.GetComponent<Enemy>();
+            enemy.Init(spawn.enemy, pathPoints);
+
+            yield return new WaitForSeconds(spawn.delayAfterSpawn);
         }
     }
 }

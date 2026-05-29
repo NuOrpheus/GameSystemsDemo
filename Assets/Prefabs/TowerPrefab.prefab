@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2653230352939483477}
   - component: {fileID: 3807160095969052559}
   - component: {fileID: 7237822403794649757}
+  - component: {fileID: -7772369157053111983}
   m_Layer: 0
   m_Name: TowerPrefab
   m_TagString: Untagged
@@ -104,4 +105,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dad4e4bf805416a48bcb5249aa675689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
-  data: {fileID: 0}
+  data: {fileID: 11400000, guid: bbca2581adeae94498f58f9691a8f2e9, type: 2}
+--- !u!95 &-7772369157053111983
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9215399825038353361}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e330c6e1d34a4fe4999d5c6fc864e5e1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

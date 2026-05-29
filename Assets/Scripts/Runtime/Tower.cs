@@ -8,12 +8,14 @@ public class Tower : MonoBehaviour
 
     void Update()
     {
+        if (data == null) return;
+
         fireCooldown -= Time.deltaTime;
 
         Enemy target = FindTarget();
         if (target == null) return;
 
-        transform.LookAt(target.transform);
+        //RotateTowards(target);
 
         if (fireCooldown <= 0f)
         {
@@ -24,28 +26,39 @@ public class Tower : MonoBehaviour
 
     Enemy FindTarget()
     {
-        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+        Enemy[] enemies = FindObjectsByType<Enemy>();
 
-        Enemy best = null;
-        float bestDistance = Mathf.Infinity;
+        Enemy bestTarget = null;
+        float closestDistance = Mathf.Infinity;
 
         foreach (Enemy enemy in enemies)
         {
             float distance = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distance > data.range) continue;
 
-            if (distance < bestDistance)
+            if (distance <= data.range && distance < closestDistance)
             {
-                bestDistance = distance;
-                best = enemy;
+                closestDistance = distance;
+                bestTarget = enemy;
             }
         }
 
-        return best;
+        return bestTarget;
+    }
+
+    void RotateTowards(Enemy target)
+    {
+        Vector3 direction = target.transform.position - transform.position;
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        // Use angle - 90 if your tower sprite points upward by default.
+        transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
     }
 
     void Shoot(Enemy target)
     {
+        if (data.projectilePrefab == null) return;
+
         GameObject projectileObj = Instantiate(
             data.projectilePrefab,
             transform.position + Vector3.up,
@@ -53,6 +66,10 @@ public class Tower : MonoBehaviour
         );
 
         Projectile projectile = projectileObj.GetComponent<Projectile>();
-        projectile.Init(target, data.damage, data.projectileSpeed);
+
+        if (projectile != null)
+        {
+            projectile.Init(target, data.damage, data.projectileSpeed);
+        }
     }
 }

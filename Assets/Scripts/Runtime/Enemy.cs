@@ -3,7 +3,6 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public EnemyData data;
-
     private int health;
     private Transform[] path;
     private int pathIndex;
