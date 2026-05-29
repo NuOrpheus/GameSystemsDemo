@@ -4,7 +4,7 @@ public class TowerPlacer : MonoBehaviour
 {
     public GameObject towerPrefab;
     public Camera cam;
-    public LayerMask buildableLayer;
+    public LayerMask nodeLayer;
 
     void Awake()
     {
@@ -29,13 +29,13 @@ public class TowerPlacer : MonoBehaviour
         }
 
         Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mousePosition = new Vector2(mouseWorld.x, mouseWorld.y);
+        Vector2 mousePosition = mouseWorld;
 
         RaycastHit2D hit = Physics2D.Raycast(
             mousePosition,
             Vector2.zero,
             0f,
-            buildableLayer
+            nodeLayer
         );
 
         if (hit.collider == null)
@@ -46,10 +46,11 @@ public class TowerPlacer : MonoBehaviour
         if (node == null)
             return;
 
-        if (node.occupied)
+        if (!node.CanBuild())
             return;
 
         Instantiate(towerPrefab, node.transform.position, Quaternion.identity);
+
         node.SetOccupied(true);
     }
 }

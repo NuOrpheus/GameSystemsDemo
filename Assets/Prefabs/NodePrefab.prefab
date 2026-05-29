@@ -105,6 +105,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ce0b85ba4308745b1dfe2ec0f5acff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildNode
+  x: 0
+  y: 0
+  isBuildable: 1
   occupied: 0
 --- !u!61 &3342799128073323082
 BoxCollider2D:
