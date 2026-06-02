@@ -11,6 +11,8 @@ public class TowerData : ScriptableObject
     public GameObject projectilePrefab;
 
     public int cost = 100;
+    public int sellValue = 75;
+
     public float range = 4f;
     public float fireRate = 1f;
     public int damage = 10;

@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Tower : MonoBehaviour
 {
     public TowerData data;
+    public BuildNode buildNode;
 
     private float fireCooldown;
 
@@ -15,8 +17,6 @@ public class Tower : MonoBehaviour
         Enemy target = FindTarget();
         if (target == null) return;
 
-        //RotateTowards(target);
-
         if (fireCooldown <= 0f)
         {
             Shoot(target);
@@ -24,9 +24,24 @@ public class Tower : MonoBehaviour
         }
     }
 
+    public void Sell()
+    {
+        if (data == null) return;
+
+        int refund = Mathf.RoundToInt(data.cost * 0.75f);
+
+        if (ResourceManager.Instance != null)
+            ResourceManager.Instance.Add(refund);
+
+        if (buildNode != null)
+            buildNode.SetOccupied(false);
+
+        Destroy(gameObject);
+    }
+
     Enemy FindTarget()
     {
-        Enemy[] enemies = FindObjectsByType<Enemy>();
+        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
 
         Enemy bestTarget = null;
         float closestDistance = Mathf.Infinity;
@@ -45,16 +60,6 @@ public class Tower : MonoBehaviour
         return bestTarget;
     }
 
-    void RotateTowards(Enemy target)
-    {
-        Vector3 direction = target.transform.position - transform.position;
-
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        // Use angle - 90 if your tower sprite points upward by default.
-        transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
-    }
-
     void Shoot(Enemy target)
     {
         if (data.projectilePrefab == null) return;
@@ -70,13 +75,20 @@ public class Tower : MonoBehaviour
         if (projectile != null)
         {
             projectile.Init(
-    target,
-    data.damage,
-    data.projectileSpeed,
-    data.effectType,
-    data.slowMultiplier,
-    data.slowDuration
-);
+                target,
+                data.damage,
+                data.projectileSpeed,
+                data.effectType,
+                data.slowMultiplier,
+                data.slowDuration
+            );
+        }
+    }
+    void OnMouseOver()
+    {
+        if (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            Sell();
         }
     }
 }

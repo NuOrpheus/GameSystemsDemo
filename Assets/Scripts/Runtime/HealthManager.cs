@@ -25,9 +25,10 @@ public class HealthManager : MonoBehaviour
 
         if (health <= 0)
         {
-            Debug.Log("Game Over");
+            GameManager.Instance.GameOver();
         }
     }
+
 
     void UpdateUI()
     {

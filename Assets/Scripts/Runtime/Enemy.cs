@@ -11,10 +11,11 @@ public class Enemy : MonoBehaviour
     private float baseSpeed;
     private float currentSpeed;
     private float slowTimer;
+    private WaveSpawner spawner;
 
     public float Progress => pathIndex;
 
-    public void Init(EnemyData enemyData, Transform[] pathPoints)
+    public void Init(EnemyData enemyData, Transform[] pathPoints, WaveSpawner waveSpawner)
     {
         data = enemyData;
         health = data.maxHealth;
@@ -24,6 +25,8 @@ public class Enemy : MonoBehaviour
         baseSpeed = data.moveSpeed;
         currentSpeed = baseSpeed;
         slowTimer = 0f;
+
+        spawner = waveSpawner;
     }
 
     void Update()
@@ -51,11 +54,13 @@ public class Enemy : MonoBehaviour
                 {
                     HealthManager.Instance.TakeDamage(data.livesDamage);
                 }
+                    if (spawner != null)
+                        spawner.EnemyFinished();
 
-                Destroy(gameObject);
+                    Destroy(gameObject);
+                }
             }
         }
-    }
 
     void UpdateSlow()
     {
@@ -80,6 +85,9 @@ public class Enemy : MonoBehaviour
             {
                 ResourceManager.Instance.Add(data.reward);
             }
+            if (spawner != null)
+                spawner.EnemyFinished();
+
             Destroy(gameObject);
         }
     }
