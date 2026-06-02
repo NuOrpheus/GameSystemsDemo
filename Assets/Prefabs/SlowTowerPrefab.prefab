@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7237822403794649757}
   - component: {fileID: -7772369157053111983}
   m_Layer: 0
-  m_Name: TowerPrefab
+  m_Name: SlowTowerPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dad4e4bf805416a48bcb5249aa675689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
-  data: {fileID: 11400000, guid: bbca2581adeae94498f58f9691a8f2e9, type: 2}
+  data: {fileID: 11400000, guid: 08a049c15b4d5274ba8c93532a3560bd, type: 2}
 --- !u!95 &-7772369157053111983
 Animator:
   serializedVersion: 7

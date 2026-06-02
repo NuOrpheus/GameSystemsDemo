@@ -6,11 +6,23 @@ public class Projectile : MonoBehaviour
     private int damage;
     private float speed;
 
-    public void Init(Enemy targetEnemy, int projectileDamage, float projectileSpeed)
+    private TowerEffectType effectType;
+    private float slowMultiplier;
+    private float slowDuration;
+
+    public void Init(Enemy target,
+        int damage,
+        float speed,
+        TowerEffectType effectType,
+        float slowMultiplier,
+        float slowDuration)
     {
-        target = targetEnemy;
-        damage = projectileDamage;
-        speed = projectileSpeed;
+        this.target = target;
+        this.damage = damage;
+        this.speed = speed;
+        this.effectType = effectType;
+        this.slowMultiplier = slowMultiplier;
+        this.slowDuration = slowDuration;
     }
 
     void Update()
@@ -29,8 +41,20 @@ public class Projectile : MonoBehaviour
 
         if (Vector3.Distance(transform.position, target.transform.position) < 0.1f)
         {
-            target.TakeDamage(damage);
-            Destroy(gameObject);
+            HitTarget();
         }
+    }
+    void HitTarget()
+    {
+        if (effectType == TowerEffectType.Damage)
+        {
+            target.TakeDamage(damage);
+        }
+        else if (effectType == TowerEffectType.Slow)
+        {
+            target.ApplySlow(slowMultiplier, slowDuration);
+        }
+
+        Destroy(gameObject);
     }
 }

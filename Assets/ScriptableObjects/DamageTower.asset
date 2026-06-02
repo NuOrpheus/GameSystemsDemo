@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 963b3362e8c2db245af80a4cf3f7af2c, type: 3}
-  m_Name: New Tower Data
+  m_Name: DamageTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  displayName: Tower
+  displayName: DamageTower
   prefab: {fileID: 9215399825038353361, guid: acd9e56f72583bf46b60868e217283ef, type: 3}
   projectilePrefab: {fileID: 2092777232227346601, guid: 9aafb6cfde87f0341b3152d4145e07ca, type: 3}
   cost: 100
@@ -21,3 +21,6 @@ MonoBehaviour:
   damage: 10
   projectileSpeed: 10
   targetMode: 0
+  effectType: 0
+  slowMultiplier: 0.1
+  slowDuration: 2

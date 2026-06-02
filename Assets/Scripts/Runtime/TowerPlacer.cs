@@ -1,10 +1,15 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class TowerPlacer : MonoBehaviour
 {
-    public GameObject towerPrefab;
+    public GameObject[] towerPrefabs;
+    public int selectedTowerIndex = 0;
+
     public Camera cam;
     public LayerMask nodeLayer;
+
+    GameObject SelectedTowerPrefab => towerPrefabs[selectedTowerIndex];
 
     void Awake()
     {
@@ -14,43 +19,67 @@ public class TowerPlacer : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            TryPlaceTower();
-        }
+        if (Keyboard.current.digit1Key.wasPressedThisFrame) SelectTower(0);
+        if (Keyboard.current.digit2Key.wasPressedThisFrame) SelectTower(1);
+        if (Keyboard.current.digit3Key.wasPressedThisFrame) SelectTower(2);
+        if (Keyboard.current.digit4Key.wasPressedThisFrame) SelectTower(3);
+    }
+
+    void SelectTower(int index)
+    {
+        if (index < 0 || index >= towerPrefabs.Length)
+            return;
+
+        selectedTowerIndex = index;
+        Debug.Log("Selected tower: " + SelectedTowerPrefab.name);
+    }
+
+    public void OnPlaceTower(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        TryPlaceTower();
     }
 
     void TryPlaceTower()
     {
-        if (towerPrefab == null)
+        if (SelectedTowerPrefab == null)
+            return;
+
+        Vector2 screenPos = Mouse.current.position.ReadValue();
+        Vector3 worldPos = cam.ScreenToWorldPoint(screenPos);
+        worldPos.z = 0f;
+
+        Collider2D hit = Physics2D.OverlapPoint(worldPos, nodeLayer);
+
+        if (hit == null)
+            return;
+
+        BuildNode node = hit.GetComponent<BuildNode>();
+
+        if (node == null || !node.CanBuild())
+            return;
+
+        Tower tower = SelectedTowerPrefab.GetComponent<Tower>();
+
+        if (tower == null || tower.data == null)
         {
-            Debug.LogError("TowerPlacer2D: No towerPrefab assigned.");
+            Debug.LogError("Selected tower prefab is missing TowerData.");
             return;
         }
 
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mousePosition = mouseWorld;
+        int cost = tower.data.cost;
 
-        RaycastHit2D hit = Physics2D.Raycast(
-            mousePosition,
-            Vector2.zero,
-            0f,
-            nodeLayer
-        );
-
-        if (hit.collider == null)
+        if (!ResourceManager.Instance.CanAfford(cost))
+        {
+            Debug.Log("Not enough resources.");
             return;
+        }
 
-        BuildNode node = hit.collider.GetComponent<BuildNode>();
+        ResourceManager.Instance.Spend(cost);
 
-        if (node == null)
-            return;
-
-        if (!node.CanBuild())
-            return;
-
-        Instantiate(towerPrefab, node.transform.position, Quaternion.identity);
-
+        Instantiate(SelectedTowerPrefab, node.transform.position, Quaternion.identity);
         node.SetOccupied(true);
     }
 }

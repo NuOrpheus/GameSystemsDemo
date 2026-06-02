@@ -69,7 +69,14 @@ public class Tower : MonoBehaviour
 
         if (projectile != null)
         {
-            projectile.Init(target, data.damage, data.projectileSpeed);
+            projectile.Init(
+    target,
+    data.damage,
+    data.projectileSpeed,
+    data.effectType,
+    data.slowMultiplier,
+    data.slowDuration
+);
         }
     }
 }

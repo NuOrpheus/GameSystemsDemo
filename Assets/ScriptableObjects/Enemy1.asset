@@ -15,6 +15,6 @@ MonoBehaviour:
   displayName: Enemy1
   prefab: {fileID: 4713701041789463997, guid: 2eda0adf283894e438f57fc2cf0fded0, type: 3}
   maxHealth: 50
-  moveSpeed: 10
+  moveSpeed: 5
   reward: 10
   livesDamage: 1
