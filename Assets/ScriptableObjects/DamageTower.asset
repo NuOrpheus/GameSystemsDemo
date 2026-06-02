@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 963b3362e8c2db245af80a4cf3f7af2c, type: 3}
   m_Name: DamageTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  displayName: DamageTower
+  displayName: Damage Tower
   prefab: {fileID: 9215399825038353361, guid: acd9e56f72583bf46b60868e217283ef, type: 3}
   projectilePrefab: {fileID: 2092777232227346601, guid: 9aafb6cfde87f0341b3152d4145e07ca, type: 3}
   cost: 100
+  sellValue: 75
   range: 10
   fireRate: 10
   damage: 10
@@ -24,3 +25,14 @@ MonoBehaviour:
   effectType: 0
   slowMultiplier: 0.1
   slowDuration: 2
+  poisonDamagePerTick: 2
+  poisonDuration: 4
+  poisonTickRate: 1
+  splashRadius: 1.5
+  splashDamage: 10
+  stunDuration: 1
+  burnDamagePerTick: 5
+  burnDuration: 2
+  burnTickRate: 0.5
+  resourceGain: 5
+  resourceInterval: 5

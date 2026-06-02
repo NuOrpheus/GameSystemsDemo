@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -11,20 +12,31 @@ public class Enemy : MonoBehaviour
     private float baseSpeed;
     private float currentSpeed;
     private float slowTimer;
+
+    private bool isStunned;
+    private float stunTimer;
+
     private WaveSpawner spawner;
 
     public float Progress => pathIndex;
 
-    public void Init(EnemyData enemyData, Transform[] pathPoints, WaveSpawner waveSpawner)
+    public void Init(
+        EnemyData enemyData,
+        Transform[] pathPoints,
+        WaveSpawner waveSpawner)
     {
         data = enemyData;
         health = data.maxHealth;
+
         path = pathPoints;
         pathIndex = 0;
 
         baseSpeed = data.moveSpeed;
         currentSpeed = baseSpeed;
+
         slowTimer = 0f;
+        stunTimer = 0f;
+        isStunned = false;
 
         spawner = waveSpawner;
     }
@@ -35,6 +47,10 @@ public class Enemy : MonoBehaviour
         if (path == null || pathIndex >= path.Length) return;
 
         UpdateSlow();
+        UpdateStun();
+
+        if (isStunned)
+            return;
 
         Transform target = path[pathIndex];
 
@@ -54,13 +70,16 @@ public class Enemy : MonoBehaviour
                 {
                     HealthManager.Instance.TakeDamage(data.livesDamage);
                 }
-                    if (spawner != null)
-                        spawner.EnemyFinished();
 
-                    Destroy(gameObject);
+                if (spawner != null)
+                {
+                    spawner.EnemyFinished();
                 }
+
+                Destroy(gameObject);
             }
         }
+    }
 
     void UpdateSlow()
     {
@@ -75,21 +94,58 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void UpdateStun()
+    {
+        if (!isStunned)
+            return;
+
+        stunTimer -= Time.deltaTime;
+
+        if (stunTimer <= 0f)
+        {
+            isStunned = false;
+        }
+    }
+
     public void TakeDamage(int amount)
     {
+        if (FloatingTextManager.Instance != null && amount > 0)
+        {
+            FloatingTextManager.Instance.Spawn(
+                amount.ToString(),
+                transform.position + Vector3.up
+            );
+        }
+
         health -= amount;
 
         if (health <= 0)
         {
-            if (ResourceManager.Instance != null)
-            {
-                ResourceManager.Instance.Add(data.reward);
-            }
-            if (spawner != null)
-                spawner.EnemyFinished();
-
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    void Die()
+    {
+        if (ResourceManager.Instance != null)
+        {
+            ResourceManager.Instance.Add(data.reward);
+        }
+
+        if (spawner != null)
+        {
+            spawner.EnemyFinished();
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.Play(
+                AudioManager.Instance.enemyDeath,
+                0.5f
+            );
+        }
+
+        Destroy(gameObject);
     }
 
     public void ApplySlow(float multiplier, float duration)
@@ -98,5 +154,73 @@ public class Enemy : MonoBehaviour
 
         currentSpeed = baseSpeed * multiplier;
         slowTimer = duration;
+    }
+
+    public void ApplyStun(float duration)
+    {
+        isStunned = true;
+        stunTimer = duration;
+    }
+
+    public void ApplyPoison(
+        int damagePerTick,
+        float duration,
+        float tickRate)
+    {
+        StartCoroutine(
+            PoisonRoutine(
+                damagePerTick,
+                duration,
+                tickRate
+            )
+        );
+    }
+
+    IEnumerator PoisonRoutine(
+        int damagePerTick,
+        float duration,
+        float tickRate)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            TakeDamage(damagePerTick);
+
+            yield return new WaitForSeconds(tickRate);
+
+            elapsed += tickRate;
+        }
+    }
+
+    public void ApplyBurn(
+        int damagePerTick,
+        float duration,
+        float tickRate)
+    {
+        StartCoroutine(
+            BurnRoutine(
+                damagePerTick,
+                duration,
+                tickRate
+            )
+        );
+    }
+
+    IEnumerator BurnRoutine(
+        int damagePerTick,
+        float duration,
+        float tickRate)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            TakeDamage(damagePerTick);
+
+            yield return new WaitForSeconds(tickRate);
+
+            elapsed += tickRate;
+        }
     }
 }

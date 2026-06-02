@@ -3,26 +3,12 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     private Enemy target;
-    private int damage;
-    private float speed;
+    private TowerData data;
 
-    private TowerEffectType effectType;
-    private float slowMultiplier;
-    private float slowDuration;
-
-    public void Init(Enemy target,
-        int damage,
-        float speed,
-        TowerEffectType effectType,
-        float slowMultiplier,
-        float slowDuration)
+    public void Init(Enemy target, TowerData towerData)
     {
         this.target = target;
-        this.damage = damage;
-        this.speed = speed;
-        this.effectType = effectType;
-        this.slowMultiplier = slowMultiplier;
-        this.slowDuration = slowDuration;
+        data = towerData;
     }
 
     void Update()
@@ -36,7 +22,7 @@ public class Projectile : MonoBehaviour
         transform.position = Vector3.MoveTowards(
             transform.position,
             target.transform.position,
-            speed * Time.deltaTime
+            data.projectileSpeed * Time.deltaTime
         );
 
         if (Vector3.Distance(transform.position, target.transform.position) < 0.1f)
@@ -44,17 +30,66 @@ public class Projectile : MonoBehaviour
             HitTarget();
         }
     }
+
     void HitTarget()
     {
-        if (effectType == TowerEffectType.Damage)
+        switch (data.effectType)
         {
-            target.TakeDamage(damage);
-        }
-        else if (effectType == TowerEffectType.Slow)
-        {
-            target.ApplySlow(slowMultiplier, slowDuration);
+            case TowerEffectType.Damage:
+                target.TakeDamage(data.damage);
+                break;
+
+            case TowerEffectType.Slow:
+                target.TakeDamage(data.damage);
+                target.ApplySlow(data.slowMultiplier, data.slowDuration);
+                break;
+
+            case TowerEffectType.Poison:
+                target.TakeDamage(data.damage);
+                target.ApplyPoison(
+                    data.poisonDamagePerTick,
+                    data.poisonDuration,
+                    data.poisonTickRate
+                );
+                break;
+
+            case TowerEffectType.Burn:
+                target.TakeDamage(data.damage);
+                target.ApplyBurn(
+                    data.burnDamagePerTick,
+                    data.burnDuration,
+                    data.burnTickRate
+                );
+                break;
+
+            case TowerEffectType.Stun:
+                target.TakeDamage(data.damage);
+                target.ApplyStun(data.stunDuration);
+                break;
+
+            case TowerEffectType.Splash:
+                ApplySplash();
+                break;
         }
 
         Destroy(gameObject);
+    }
+
+    void ApplySplash()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            transform.position,
+            data.splashRadius
+        );
+
+        foreach (Collider2D hit in hits)
+        {
+            Enemy enemy = hit.GetComponent<Enemy>();
+
+            if (enemy != null)
+            {
+                enemy.TakeDamage(data.splashDamage);
+            }
+        }
     }
 }

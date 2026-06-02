@@ -3,28 +3,14 @@ using UnityEngine.InputSystem;
 
 public class TowerPlacer : MonoBehaviour
 {
-    public GameObject[] towerPrefabs;
-    public int selectedTowerIndex = 0;
+    public TowerData[] towers;
+    public TowerData selectedTower;
 
     public Camera cam;
     public LayerMask nodeLayer;
     public RangePreview rangePreview;
 
     private BuildNode hoveredNode;
-
-    GameObject SelectedTowerPrefab
-    {
-        get
-        {
-            if (towerPrefabs == null || towerPrefabs.Length == 0)
-                return null;
-
-            if (selectedTowerIndex < 0 || selectedTowerIndex >= towerPrefabs.Length)
-                return null;
-
-            return towerPrefabs[selectedTowerIndex];
-        }
-    }
 
     void Awake()
     {
@@ -34,7 +20,8 @@ public class TowerPlacer : MonoBehaviour
 
     void Start()
     {
-        SelectTower(selectedTowerIndex);
+        if (selectedTower == null && towers.Length > 0)
+            SelectTower(0);
     }
 
     void Update()
@@ -52,54 +39,35 @@ public class TowerPlacer : MonoBehaviour
         if (Keyboard.current.digit2Key.wasPressedThisFrame) SelectTower(1);
         if (Keyboard.current.digit3Key.wasPressedThisFrame) SelectTower(2);
         if (Keyboard.current.digit4Key.wasPressedThisFrame) SelectTower(3);
+        if (Keyboard.current.digit5Key.wasPressedThisFrame) SelectTower(4);
+        if (Keyboard.current.digit6Key.wasPressedThisFrame) SelectTower(5);
+        if (Keyboard.current.digit7Key.wasPressedThisFrame) SelectTower(6);
     }
 
-    void UpdateRangePreview()
+    public void SelectTower(int index)
     {
-        hoveredNode = GetNodeUnderMouse();
-
-        GameObject prefab = SelectedTowerPrefab;
-
-        if (hoveredNode == null || prefab == null)
-        {
-            if (rangePreview != null)
-                rangePreview.Hide();
-
+        if (towers == null)
             return;
-        }
 
-        Tower tower = prefab.GetComponent<Tower>();
-
-        if (tower == null || tower.data == null)
-        {
-            if (rangePreview != null)
-                rangePreview.Hide();
-
+        if (index < 0 || index >= towers.Length)
             return;
-        }
 
-        if (rangePreview != null)
-        {
-            rangePreview.Show(
-                hoveredNode.transform.position,
-                tower.data.range
-            );
-        }
+        if (towers[index] == null)
+            return;
+
+        selectedTower = towers[index];
+
+        Debug.Log("Selected tower: " + selectedTower.displayName);
     }
 
-    void SelectTower(int index)
+    public void SelectTower(TowerData towerData)
     {
-        if (towerPrefabs == null)
+        if (towerData == null)
             return;
 
-        if (index < 0 || index >= towerPrefabs.Length)
-            return;
+        selectedTower = towerData;
 
-        if (towerPrefabs[index] == null)
-            return;
-
-        selectedTowerIndex = index;
-        Debug.Log("Selected tower: " + towerPrefabs[index].name);
+        Debug.Log("Selected tower: " + selectedTower.displayName);
     }
 
     public void OnPlaceTower(InputValue value)
@@ -112,9 +80,7 @@ public class TowerPlacer : MonoBehaviour
 
     void TryPlaceTower()
     {
-        GameObject prefab = SelectedTowerPrefab;
-
-        if (prefab == null)
+        if (selectedTower == null || selectedTower.prefab == null)
             return;
 
         BuildNode node = GetNodeUnderMouse();
@@ -122,15 +88,7 @@ public class TowerPlacer : MonoBehaviour
         if (node == null || !node.CanBuild())
             return;
 
-        Tower tower = prefab.GetComponent<Tower>();
-
-        if (tower == null || tower.data == null)
-        {
-            Debug.LogError("Selected tower prefab is missing TowerData.");
-            return;
-        }
-
-        int cost = tower.data.cost;
+        int cost = selectedTower.cost;
 
         if (ResourceManager.Instance == null)
         {
@@ -140,6 +98,9 @@ public class TowerPlacer : MonoBehaviour
 
         if (!ResourceManager.Instance.CanAfford(cost))
         {
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.Play(AudioManager.Instance.notEnoughResources);
+
             Debug.Log("Not enough resources.");
             return;
         }
@@ -147,15 +108,19 @@ public class TowerPlacer : MonoBehaviour
         ResourceManager.Instance.Spend(cost);
 
         GameObject towerObj = Instantiate(
-            prefab,
+            selectedTower.prefab,
             node.transform.position,
             Quaternion.identity
         );
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.Play(AudioManager.Instance.placeTower);
 
         Tower placedTower = towerObj.GetComponent<Tower>();
 
         if (placedTower != null)
         {
+            placedTower.data = selectedTower;
             placedTower.buildNode = node;
         }
 
@@ -163,6 +128,27 @@ public class TowerPlacer : MonoBehaviour
 
         if (rangePreview != null)
             rangePreview.Hide();
+    }
+
+    void UpdateRangePreview()
+    {
+        hoveredNode = GetNodeUnderMouse();
+
+        if (hoveredNode == null || selectedTower == null)
+        {
+            if (rangePreview != null)
+                rangePreview.Hide();
+
+            return;
+        }
+
+        if (rangePreview != null)
+        {
+            rangePreview.Show(
+                hoveredNode.transform.position,
+                selectedTower.range
+            );
+        }
     }
 
     BuildNode GetNodeUnderMouse()
@@ -179,6 +165,6 @@ public class TowerPlacer : MonoBehaviour
         if (hit == null)
             return null;
 
-        return hit.GetComponent<BuildNode>();
+        return hit.GetComponentInParent<BuildNode>();
     }
 }

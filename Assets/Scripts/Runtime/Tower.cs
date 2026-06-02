@@ -7,15 +7,25 @@ public class Tower : MonoBehaviour
     public BuildNode buildNode;
 
     private float fireCooldown;
+    private float resourceTimer;
 
     void Update()
     {
-        if (data == null) return;
+        if (data == null)
+            return;
+
+        if (data.effectType == TowerEffectType.Resource)
+        {
+            UpdateResourceTower();
+            return;
+        }
 
         fireCooldown -= Time.deltaTime;
 
         Enemy target = FindTarget();
-        if (target == null) return;
+
+        if (target == null)
+            return;
 
         if (fireCooldown <= 0f)
         {
@@ -24,31 +34,51 @@ public class Tower : MonoBehaviour
         }
     }
 
+    void UpdateResourceTower()
+    {
+        resourceTimer += Time.deltaTime;
+
+        if (resourceTimer >= data.resourceInterval)
+        {
+            resourceTimer = 0f;
+
+            if (ResourceManager.Instance != null)
+            {
+                ResourceManager.Instance.Add(data.resourceGain);
+            }
+        }
+    }
+
     public void Sell()
     {
-        if (data == null) return;
-
-        int refund = Mathf.RoundToInt(data.cost * 0.75f);
+        if (data == null)
+            return;
 
         if (ResourceManager.Instance != null)
-            ResourceManager.Instance.Add(refund);
+            ResourceManager.Instance.Add(data.sellValue);
 
         if (buildNode != null)
             buildNode.SetOccupied(false);
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.Play(AudioManager.Instance.sellTower);
 
         Destroy(gameObject);
     }
 
     Enemy FindTarget()
     {
-        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+        Enemy[] enemies = FindObjectsByType<Enemy>();
 
         Enemy bestTarget = null;
         float closestDistance = Mathf.Infinity;
 
         foreach (Enemy enemy in enemies)
         {
-            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+            float distance = Vector3.Distance(
+                transform.position,
+                enemy.transform.position
+            );
 
             if (distance <= data.range && distance < closestDistance)
             {
@@ -62,7 +92,8 @@ public class Tower : MonoBehaviour
 
     void Shoot(Enemy target)
     {
-        if (data.projectilePrefab == null) return;
+        if (data.projectilePrefab == null)
+            return;
 
         GameObject projectileObj = Instantiate(
             data.projectilePrefab,
@@ -74,19 +105,19 @@ public class Tower : MonoBehaviour
 
         if (projectile != null)
         {
-            projectile.Init(
-                target,
-                data.damage,
-                data.projectileSpeed,
-                data.effectType,
-                data.slowMultiplier,
-                data.slowDuration
-            );
+            projectile.Init(target, data);
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayShoot();
         }
     }
+
     void OnMouseOver()
     {
-        if (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame)
+        if (Mouse.current != null &&
+            Mouse.current.rightButton.wasPressedThisFrame)
         {
             Sell();
         }
