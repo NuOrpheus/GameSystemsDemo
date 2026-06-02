@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static FloatingText;
 
 public class Tower : MonoBehaviour
 {
@@ -45,6 +46,14 @@ public class Tower : MonoBehaviour
             if (ResourceManager.Instance != null)
             {
                 ResourceManager.Instance.Add(data.resourceGain);
+                if (FloatingTextManager.Instance != null)
+                {
+                    FloatingTextManager.Instance.Spawn(
+                        "+" + data.resourceGain,
+                        transform.position + Vector3.up,
+                        FloatingTextType.Resource
+                    );
+                }
             }
         }
     }

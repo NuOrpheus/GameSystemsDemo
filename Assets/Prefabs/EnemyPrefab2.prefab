@@ -106,6 +106,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   data: {fileID: 11400000, guid: 36ed6c965b7de0d42b9e1f4d1f6e073a, type: 2}
+  fireEffectPrefab: {fileID: 1312539453410039685, guid: d0fc7fbec62cdb145b1936ee6714b485, type: 3}
+  poisonEffectPrefab: {fileID: 1312539453410039685, guid: 6e5993bdf8bcebe46ac562d50fc7c07f, type: 3}
 --- !u!95 &-620605400254378843
 Animator:
   serializedVersion: 7
@@ -116,7 +118,7 @@ Animator:
   m_GameObject: {fileID: 4713701041789463997}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5e382d07913d55e4b933763831d2b418, type: 2}
+  m_Controller: {fileID: 9100000, guid: 580c01aafca77c545927c574768e7c55, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

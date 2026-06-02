@@ -17,9 +17,9 @@ MonoBehaviour:
     delayAfterSpawn: 1
   - enemy: {fileID: 11400000, guid: 36ed6c965b7de0d42b9e1f4d1f6e073a, type: 2}
     delayAfterSpawn: 1
-  - enemy: {fileID: 11400000, guid: 36ed6c965b7de0d42b9e1f4d1f6e073a, type: 2}
+  - enemy: {fileID: 11400000, guid: 6801b598878ba304e9a46ecc8bf374f0, type: 2}
     delayAfterSpawn: 1
-  - enemy: {fileID: 11400000, guid: a25d5de58a205c14b9707f75ce37843b, type: 2}
+  - enemy: {fileID: 11400000, guid: c64a1d1bec0c7b94bad04168c2643b57, type: 2}
     delayAfterSpawn: 1
   - enemy: {fileID: 11400000, guid: a25d5de58a205c14b9707f75ce37843b, type: 2}
     delayAfterSpawn: 1

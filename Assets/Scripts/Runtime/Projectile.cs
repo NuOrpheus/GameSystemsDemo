@@ -77,6 +77,14 @@ public class Projectile : MonoBehaviour
 
     void ApplySplash()
     {
+        if (CameraShake.Instance != null)
+        {
+            CameraShake.Instance.Shake(
+                0.15f,
+                0.15f,
+                20
+            );
+        }
         Collider2D[] hits = Physics2D.OverlapCircleAll(
             transform.position,
             data.splashRadius
