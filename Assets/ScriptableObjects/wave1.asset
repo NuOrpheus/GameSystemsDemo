@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f9aae2c2389a1bd4ca00c09f6e47c663, type: 3}
-  m_Name: New Wave Data 1
+  m_Name: wave1
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
   spawns:
   - enemy: {fileID: 11400000, guid: a25d5de58a205c14b9707f75ce37843b, type: 2}

@@ -462,11 +462,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ecf50e4596b3af499893da21edfe264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
-  wave: {fileID: 11400000, guid: 42ed8e6a65bca5743adf212a41ae7eaf, type: 2}
+  waves:
+  - {fileID: 11400000, guid: 42ed8e6a65bca5743adf212a41ae7eaf, type: 2}
+  - {fileID: 11400000, guid: f798bcb5042d9904996373f5f5834683, type: 2}
   spawnPoint: {fileID: 2067585770}
   pathPoints:
   - {fileID: 307475428}
   - {fileID: 1658305306}
+  delayBetweenWaves: 5
 --- !u!4 &619489766
 Transform:
   m_ObjectHideFlags: 0

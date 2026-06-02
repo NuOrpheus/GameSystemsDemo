@@ -3,16 +3,39 @@ using UnityEngine;
 
 public class WaveSpawner : MonoBehaviour
 {
-    public WaveData wave;
+    public WaveData[] waves;
     public Transform spawnPoint;
     public Transform[] pathPoints;
 
+    public float delayBetweenWaves = 5f;
+
+    private int currentWaveIndex = 0;
+
     void Start()
     {
-        StartCoroutine(SpawnWave());
+        StartCoroutine(SpawnAllWaves());
     }
 
-    IEnumerator SpawnWave()
+    IEnumerator SpawnAllWaves()
+    {
+        while (currentWaveIndex < waves.Length)
+        {
+            WaveData wave = waves[currentWaveIndex];
+
+            Debug.Log("Starting wave " + (currentWaveIndex + 1));
+
+            yield return StartCoroutine(SpawnWave(wave));
+
+            currentWaveIndex++;
+
+            if (currentWaveIndex < waves.Length)
+                yield return new WaitForSeconds(delayBetweenWaves);
+        }
+
+        Debug.Log("All waves finished");
+    }
+
+    IEnumerator SpawnWave(WaveData wave)
     {
         foreach (WaveSpawn spawn in wave.spawns)
         {
