@@ -80,7 +80,6 @@ public class Tower : MonoBehaviour
         Enemy[] enemies = FindObjectsByType<Enemy>();
 
         Enemy bestTarget = null;
-        float closestDistance = Mathf.Infinity;
 
         foreach (Enemy enemy in enemies)
         {
@@ -89,10 +88,36 @@ public class Tower : MonoBehaviour
                 enemy.transform.position
             );
 
-            if (distance <= data.range && distance < closestDistance)
+            if (distance > data.range)
+                continue;
+
+            if (bestTarget == null)
             {
-                closestDistance = distance;
                 bestTarget = enemy;
+                continue;
+            }
+
+            switch (data.targetMode)
+            {
+                case TowerTargetMode.Closest:
+                    if (distance < Vector3.Distance(transform.position, bestTarget.transform.position))
+                        bestTarget = enemy;
+                    break;
+
+                case TowerTargetMode.Strongest:
+                    if (enemy.CurrentHealth > bestTarget.CurrentHealth)
+                        bestTarget = enemy;
+                    break;
+
+                case TowerTargetMode.First:
+                    if (enemy.Progress > bestTarget.Progress)
+                        bestTarget = enemy;
+                    break;
+
+                case TowerTargetMode.Last:
+                    if (enemy.Progress < bestTarget.Progress)
+                        bestTarget = enemy;
+                    break;
             }
         }
 

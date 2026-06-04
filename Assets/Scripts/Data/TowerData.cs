@@ -56,6 +56,9 @@ public class TowerData : ScriptableObject
     public float splashRadius = 1.5f;
     public int splashDamage = 10;
 
+    [Header("Splash Visual")]
+    public GameObject splashImpactPrefab;
+
     [Header("Stun")]
     public float stunDuration = 1f;
 

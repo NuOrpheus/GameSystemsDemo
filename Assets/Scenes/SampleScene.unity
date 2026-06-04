@@ -1283,7 +1283,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.19998169}
+  m_AnchoredPosition: {x: 0, y: -0.20007324}
   m_SizeDelta: {x: 0, y: 0.41000366}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &590634802
@@ -1402,6 +1402,53 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &603520960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 603520962}
+  - component: {fileID: 603520961}
+  m_Layer: 0
+  m_Name: GhostPreview
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &603520961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603520960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a0d7b93f7d467418ec0c585115a94f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerGhostPreview
+  spriteRenderer: {fileID: 0}
+  validColor: {r: 1, g: 1, b: 1, a: 0.5}
+  invalidColor: {r: 1, g: 0, b: 0, a: 0.5}
+--- !u!4 &603520962
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603520960}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.11119, y: 3.90737, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &618296252
 GameObject:
   m_ObjectHideFlags: 0
@@ -3322,13 +3369,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dacee446b36ab549881b0ba396f2a59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerPlacer
-  towers: []
   selectedTower: {fileID: 0}
   cam: {fileID: 2037780823}
   nodeLayer:
     serializedVersion: 2
     m_Bits: 64
   rangePreview: {fileID: 1767928658}
+  ghostPreview: {fileID: 603520961}
 --- !u!4 &1287851290
 Transform:
   m_ObjectHideFlags: 0
@@ -7525,3 +7572,4 @@ SceneRoots:
   - {fileID: 776526360}
   - {fileID: 907318256}
   - {fileID: 1275180295}
+  - {fileID: 603520962}

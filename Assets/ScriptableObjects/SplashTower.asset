@@ -17,10 +17,10 @@ MonoBehaviour:
   projectilePrefab: {fileID: 2092777232227346601, guid: 9aafb6cfde87f0341b3152d4145e07ca, type: 3}
   cost: 50
   sellValue: 75
-  range: 10
+  range: 6
   fireRate: 1
-  damage: 10
-  projectileSpeed: 10
+  damage: 0
+  projectileSpeed: 7
   targetMode: 0
   effectType: 3
   slowMultiplier: 0.1

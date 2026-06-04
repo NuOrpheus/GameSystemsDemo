@@ -108,6 +108,9 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 36ed6c965b7de0d42b9e1f4d1f6e073a, type: 2}
   fireEffectPrefab: {fileID: 1312539453410039685, guid: d0fc7fbec62cdb145b1936ee6714b485, type: 3}
   poisonEffectPrefab: {fileID: 1312539453410039685, guid: 6e5993bdf8bcebe46ac562d50fc7c07f, type: 3}
+  slowEffectPrefab: {fileID: 1312539453410039685, guid: 3275758ed24262b419095f8928ac22cf, type: 3}
+  stunEffectPrefab: {fileID: 1312539453410039685, guid: 6214e61e431e74442be66ea683a3ab73, type: 3}
+  splashEffectPrefab: {fileID: 0}
 --- !u!95 &-620605400254378843
 Animator:
   serializedVersion: 7

@@ -9,9 +9,14 @@ public class Enemy : MonoBehaviour
     [Header("Effects")]
     public GameObject fireEffectPrefab;
     public GameObject poisonEffectPrefab;
+    public GameObject slowEffectPrefab;
+    public GameObject stunEffectPrefab;
+    public GameObject splashEffectPrefab;
 
     private GameObject activeFireEffect;
     private GameObject activePoisonEffect;
+    private GameObject activeSlowEffect;
+    private GameObject activeStunEffect;
 
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
@@ -31,6 +36,7 @@ public class Enemy : MonoBehaviour
     private bool isDead;
 
     public float Progress => pathIndex;
+    public int CurrentHealth => health;
 
     void Awake()
     {
@@ -96,6 +102,8 @@ public class Enemy : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
+        CleanupEffects();
+
         if (HealthManager.Instance != null)
             HealthManager.Instance.TakeDamage(data.livesDamage);
 
@@ -113,7 +121,10 @@ public class Enemy : MonoBehaviour
         slowTimer -= Time.deltaTime;
 
         if (slowTimer <= 0f)
+        {
             currentSpeed = baseSpeed;
+            StopSlowEffect();
+        }
     }
 
     void UpdateStun()
@@ -124,7 +135,10 @@ public class Enemy : MonoBehaviour
         stunTimer -= Time.deltaTime;
 
         if (stunTimer <= 0f)
+        {
             isStunned = false;
+            StopStunEffect();
+        }
     }
 
     public void TakeDamage(int amount)
@@ -157,6 +171,8 @@ public class Enemy : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
+        CleanupEffects();
+
         if (ResourceManager.Instance != null)
             ResourceManager.Instance.Add(data.reward);
 
@@ -165,15 +181,9 @@ public class Enemy : MonoBehaviour
 
         if (AudioManager.Instance != null)
             AudioManager.Instance.Play(AudioManager.Instance.enemyDeath, 0.5f);
-        
+
         if (CameraShake.Instance != null)
-        {
-            CameraShake.Instance.Shake(
-                0.08f,
-                0.05f,
-                10
-            );
-        }
+            CameraShake.Instance.Shake(0.08f, 0.05f, 10);
 
         Destroy(gameObject);
     }
@@ -186,6 +196,8 @@ public class Enemy : MonoBehaviour
 
         currentSpeed = baseSpeed * multiplier;
         slowTimer = duration;
+
+        StartSlowEffect();
     }
 
     public void ApplyStun(float duration)
@@ -194,6 +206,22 @@ public class Enemy : MonoBehaviour
 
         isStunned = true;
         stunTimer = duration;
+
+        StartStunEffect();
+    }
+
+    public void ApplySplashVisual()
+    {
+        if (splashEffectPrefab == null)
+            return;
+
+        GameObject splash = Instantiate(
+            splashEffectPrefab,
+            transform.position,
+            Quaternion.identity
+        );
+
+        Destroy(splash, 1f);
     }
 
     public void ApplyPoison(
@@ -312,6 +340,75 @@ public class Enemy : MonoBehaviour
         ResetColorIfNoEffects();
     }
 
+    void StartSlowEffect()
+    {
+        if (slowEffectPrefab != null && activeSlowEffect == null)
+        {
+            activeSlowEffect = Instantiate(
+                slowEffectPrefab,
+                transform.position,
+                Quaternion.identity,
+                transform
+            );
+
+            activeSlowEffect.transform.localPosition = Vector3.zero;
+        }
+
+        SetColor(new Color(0.6f, 0.8f, 1f));
+    }
+
+    void StopSlowEffect()
+    {
+        if (activeSlowEffect != null)
+        {
+            Destroy(activeSlowEffect);
+            activeSlowEffect = null;
+        }
+
+        ResetColorIfNoEffects();
+    }
+
+    void StartStunEffect()
+    {
+        if (stunEffectPrefab != null && activeStunEffect == null)
+        {
+            activeStunEffect = Instantiate(
+                stunEffectPrefab,
+                transform.position + Vector3.up * 0.5f,
+                Quaternion.identity,
+                transform
+            );
+
+            activeStunEffect.transform.localPosition = Vector3.up * 0.5f;
+        }
+
+        SetColor(new Color(1f, 1f, 0.5f));
+    }
+
+    void StopStunEffect()
+    {
+        if (activeStunEffect != null)
+        {
+            Destroy(activeStunEffect);
+            activeStunEffect = null;
+        }
+
+        ResetColorIfNoEffects();
+    }
+
+    void CleanupEffects()
+    {
+        if (activeFireEffect != null) Destroy(activeFireEffect);
+        if (activePoisonEffect != null) Destroy(activePoisonEffect);
+        if (activeSlowEffect != null) Destroy(activeSlowEffect);
+        if (activeStunEffect != null) Destroy(activeStunEffect);
+
+        activeFireEffect = null;
+        activePoisonEffect = null;
+        activeSlowEffect = null;
+        activeStunEffect = null;
+    }
+
     void SetColor(Color color)
     {
         if (spriteRenderer != null)
@@ -320,7 +417,12 @@ public class Enemy : MonoBehaviour
 
     void ResetColorIfNoEffects()
     {
-        if (activeFireEffect == null && activePoisonEffect == null)
+        if (
+            activeFireEffect == null &&
+            activePoisonEffect == null &&
+            activeSlowEffect == null &&
+            activeStunEffect == null
+        )
         {
             if (spriteRenderer != null)
                 spriteRenderer.color = originalColor;

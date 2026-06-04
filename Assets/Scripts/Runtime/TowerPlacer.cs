@@ -3,14 +3,19 @@ using UnityEngine.InputSystem;
 
 public class TowerPlacer : MonoBehaviour
 {
-    public TowerData[] towers;
     public TowerData selectedTower;
 
     public Camera cam;
     public LayerMask nodeLayer;
+
+    [Header("Placement Feedback")]
     public RangePreview rangePreview;
+    public TowerGhostPreview ghostPreview;
 
     private BuildNode hoveredNode;
+    private BuildNode previousHoveredNode;
+
+    private BuildNode[] allNodes;
 
     void Awake()
     {
@@ -20,44 +25,14 @@ public class TowerPlacer : MonoBehaviour
 
     void Start()
     {
-        if (selectedTower == null && towers.Length > 0)
-            SelectTower(0);
+        allNodes = FindObjectsByType<BuildNode>();
+        HideBuildNodes();
+        HidePreviews();
     }
 
     void Update()
     {
-        HandleTowerSelection();
-        UpdateRangePreview();
-    }
-
-    void HandleTowerSelection()
-    {
-        if (Keyboard.current == null)
-            return;
-
-        if (Keyboard.current.digit1Key.wasPressedThisFrame) SelectTower(0);
-        if (Keyboard.current.digit2Key.wasPressedThisFrame) SelectTower(1);
-        if (Keyboard.current.digit3Key.wasPressedThisFrame) SelectTower(2);
-        if (Keyboard.current.digit4Key.wasPressedThisFrame) SelectTower(3);
-        if (Keyboard.current.digit5Key.wasPressedThisFrame) SelectTower(4);
-        if (Keyboard.current.digit6Key.wasPressedThisFrame) SelectTower(5);
-        if (Keyboard.current.digit7Key.wasPressedThisFrame) SelectTower(6);
-    }
-
-    public void SelectTower(int index)
-    {
-        if (towers == null)
-            return;
-
-        if (index < 0 || index >= towers.Length)
-            return;
-
-        if (towers[index] == null)
-            return;
-
-        selectedTower = towers[index];
-
-        Debug.Log("Selected tower: " + selectedTower.displayName);
+        UpdatePlacementPreview();
     }
 
     public void SelectTower(TowerData towerData)
@@ -67,7 +42,18 @@ public class TowerPlacer : MonoBehaviour
 
         selectedTower = towerData;
 
+        ShowBuildNodes();
+        UpdatePlacementPreview();
+
         Debug.Log("Selected tower: " + selectedTower.displayName);
+    }
+
+    public void ClearSelectedTower()
+    {
+        selectedTower = null;
+
+        HidePreviews();
+        HideBuildNodes();
     }
 
     public void OnPlaceTower(InputValue value)
@@ -88,15 +74,13 @@ public class TowerPlacer : MonoBehaviour
         if (node == null || !node.CanBuild())
             return;
 
-        int cost = selectedTower.cost;
-
         if (ResourceManager.Instance == null)
         {
             Debug.LogError("No ResourceManager in scene.");
             return;
         }
 
-        if (!ResourceManager.Instance.CanAfford(cost))
+        if (!ResourceManager.Instance.CanAfford(selectedTower.cost))
         {
             if (AudioManager.Instance != null)
                 AudioManager.Instance.Play(AudioManager.Instance.notEnoughResources);
@@ -105,16 +89,13 @@ public class TowerPlacer : MonoBehaviour
             return;
         }
 
-        ResourceManager.Instance.Spend(cost);
+        ResourceManager.Instance.Spend(selectedTower.cost);
 
         GameObject towerObj = Instantiate(
             selectedTower.prefab,
             node.transform.position,
             Quaternion.identity
         );
-
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.Play(AudioManager.Instance.placeTower);
 
         Tower placedTower = towerObj.GetComponent<Tower>();
 
@@ -126,21 +107,37 @@ public class TowerPlacer : MonoBehaviour
 
         node.SetOccupied(true);
 
-        if (rangePreview != null)
-            rangePreview.Hide();
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.Play(AudioManager.Instance.placeTower);
+
+        ClearSelectedTower();
     }
 
-    void UpdateRangePreview()
+    void UpdatePlacementPreview()
     {
         hoveredNode = GetNodeUnderMouse();
 
-        if (hoveredNode == null || selectedTower == null)
-        {
-            if (rangePreview != null)
-                rangePreview.Hide();
+        if (previousHoveredNode != null && previousHoveredNode != hoveredNode)
+            previousHoveredNode.SetHoverVisual(false);
 
+        if (selectedTower == null)
+        {
+            HidePreviews();
+            HideBuildNodes();
+            previousHoveredNode = hoveredNode;
             return;
         }
+
+        ShowBuildNodes();
+
+        if (hoveredNode == null || !hoveredNode.CanBuild())
+        {
+            HidePreviews();
+            previousHoveredNode = hoveredNode;
+            return;
+        }
+
+        hoveredNode.SetHoverVisual(true);
 
         if (rangePreview != null)
         {
@@ -148,6 +145,56 @@ public class TowerPlacer : MonoBehaviour
                 hoveredNode.transform.position,
                 selectedTower.range
             );
+        }
+
+        if (ghostPreview != null)
+        {
+            ghostPreview.Show(
+                selectedTower,
+                hoveredNode.transform.position,
+                true
+            );
+        }
+
+        previousHoveredNode = hoveredNode;
+    }
+
+    void ShowBuildNodes()
+    {
+        if (allNodes == null || allNodes.Length == 0)
+            allNodes = FindObjectsByType<BuildNode>();
+
+        foreach (BuildNode node in allNodes)
+        {
+            if (node != null)
+                node.ShowBuildable();
+        }
+    }
+
+    void HideBuildNodes()
+    {
+        if (allNodes == null)
+            return;
+
+        foreach (BuildNode node in allNodes)
+        {
+            if (node != null)
+                node.HideVisual();
+        }
+    }
+
+    void HidePreviews()
+    {
+        if (rangePreview != null)
+            rangePreview.Hide();
+
+        if (ghostPreview != null)
+            ghostPreview.Hide();
+
+        if (previousHoveredNode != null)
+        {
+            previousHoveredNode.SetHoverVisual(false);
+            previousHoveredNode = null;
         }
     }
 
@@ -157,6 +204,7 @@ public class TowerPlacer : MonoBehaviour
             return null;
 
         Vector2 screenPos = Mouse.current.position.ReadValue();
+
         Vector3 worldPos = cam.ScreenToWorldPoint(screenPos);
         worldPos.z = 0f;
 

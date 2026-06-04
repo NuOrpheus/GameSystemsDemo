@@ -21,7 +21,7 @@ MonoBehaviour:
   fireRate: 6
   damage: 0
   projectileSpeed: 7
-  targetMode: 0
+  targetMode: 2
   effectType: 2
   slowMultiplier: 0.1
   slowDuration: 2

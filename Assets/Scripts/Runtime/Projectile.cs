@@ -77,6 +77,17 @@ public class Projectile : MonoBehaviour
 
     void ApplySplash()
     {
+        if (data.splashImpactPrefab != null)
+        {
+            GameObject splash = Instantiate(
+                data.splashImpactPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+
+            Destroy(splash, 1f);
+        }
+
         if (CameraShake.Instance != null)
         {
             CameraShake.Instance.Shake(
@@ -85,6 +96,7 @@ public class Projectile : MonoBehaviour
                 20
             );
         }
+
         Collider2D[] hits = Physics2D.OverlapCircleAll(
             transform.position,
             data.splashRadius
@@ -95,9 +107,7 @@ public class Projectile : MonoBehaviour
             Enemy enemy = hit.GetComponent<Enemy>();
 
             if (enemy != null)
-            {
                 enemy.TakeDamage(data.splashDamage);
-            }
         }
     }
 }
