@@ -18,6 +18,7 @@ public enum TowerEffectType
     Burn,
     Resource
 }
+
 [System.Serializable]
 public class TowerUpgradeLevel
 {
@@ -29,26 +30,31 @@ public class TowerUpgradeLevel
     public int damageBonus = 5;
     public float rangeBonus = 0.5f;
     public float fireRateBonus = 0.25f;
+
+    [Header("Splash")]
     public int splashDamageBonus = 5;
     public float splashRadiusBonus = 0.25f;
 
     [Header("Status Effects")]
     public float slowMultiplierBonus = 0f;
     public float slowDurationBonus = 0f;
+
     public int poisonDamagePerTickBonus = 0;
     public float poisonDurationBonus = 0f;
     public float poisonTickRateMultiplier = 1f;
+
     public float stunDurationBonus = 0f;
+
     public int burnDamagePerTickBonus = 0;
     public float burnDurationBonus = 0f;
     public float burnTickRateMultiplier = 1f;
 
-    [Header("Economy")]
+    [Header("Resource Generator")]
     public int resourceGainBonus = 2;
     public float resourceIntervalMultiplier = 1f;
 }
-[CreateAssetMenu(menuName = "TD/Tower Data")]
 
+[CreateAssetMenu(menuName = "TD/Tower Data")]
 public class TowerData : ScriptableObject
 {
     [Header("Basic Info")]
@@ -69,29 +75,27 @@ public class TowerData : ScriptableObject
     [Header("Targeting")]
     public TowerTargetMode targetMode = TowerTargetMode.First;
 
-    [Header("Effect")]
+    [Header("Effect Type")]
     public TowerEffectType effectType = TowerEffectType.Damage;
 
-    [Header("Slow")]
+    [Header("Slow Effect")]
     public float slowMultiplier = 0.5f;
     public float slowDuration = 2f;
 
-    [Header("Poison")]
+    [Header("Poison Effect")]
     public int poisonDamagePerTick = 2;
     public float poisonDuration = 4f;
     public float poisonTickRate = 1f;
 
-    [Header("Splash")]
+    [Header("Splash Effect")]
     public float splashRadius = 1.5f;
     public int splashDamage = 10;
-
-    [Header("Splash Visual")]
     public GameObject splashImpactPrefab;
 
-    [Header("Stun")]
+    [Header("Stun Effect")]
     public float stunDuration = 1f;
 
-    [Header("Burn")]
+    [Header("Burn Effect")]
     public int burnDamagePerTick = 5;
     public float burnDuration = 2f;
     public float burnTickRate = 0.5f;
