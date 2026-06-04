@@ -91,6 +91,11 @@ public class TowerPlacer : MonoBehaviour
 
         ResourceManager.Instance.Spend(selectedTower.cost);
 
+        if (WaveAnalyticsManager.Instance != null)
+        {
+            WaveAnalyticsManager.Instance?.RecordResourcesSpent(selectedTower.cost);
+        }
+
         GameObject towerObj = Instantiate(
             selectedTower.prefab,
             node.transform.position,

@@ -18,8 +18,11 @@ public class WaveSpawner : MonoBehaviour
 
     void Start()
     {
-        startWaveButton.onClick.AddListener(StartNextWave);
-        startWaveButton.gameObject.SetActive(true);
+        if (startWaveButton != null)
+        {
+            startWaveButton.onClick.AddListener(StartNextWave);
+            startWaveButton.gameObject.SetActive(true);
+        }
     }
 
     public void StartNextWave()
@@ -27,16 +30,24 @@ public class WaveSpawner : MonoBehaviour
         if (waveRunning) return;
         if (currentWaveIndex >= waves.Length) return;
 
-        startWaveButton.gameObject.SetActive(false);
-        AudioManager.Instance.Play(AudioManager.Instance.waveStart);
+        if (startWaveButton != null)
+            startWaveButton.gameObject.SetActive(false);
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.Play(AudioManager.Instance.waveStart);
+
         StartCoroutine(SpawnWaveRoutine());
     }
 
     IEnumerator SpawnWaveRoutine()
     {
         waveRunning = true;
+        enemiesAlive = 0;
 
         int waveNumber = currentWaveIndex + 1;
+
+        if (WaveAnalyticsManager.Instance != null)
+            WaveAnalyticsManager.Instance.StartWave(waveNumber);
 
         if (waveUI != null)
             waveUI.ShowMessage("Wave " + waveNumber);
@@ -46,6 +57,9 @@ public class WaveSpawner : MonoBehaviour
         yield return StartCoroutine(SpawnWave(waves[currentWaveIndex]));
 
         yield return new WaitUntil(() => enemiesAlive <= 0);
+
+        if (WaveAnalyticsManager.Instance != null)
+            WaveAnalyticsManager.Instance.EndWave();
 
         currentWaveIndex++;
         waveRunning = false;
@@ -64,7 +78,8 @@ public class WaveSpawner : MonoBehaviour
         if (waveUI != null)
             waveUI.ShowMessage("Wave Complete");
 
-        startWaveButton.gameObject.SetActive(true);
+        if (startWaveButton != null)
+            startWaveButton.gameObject.SetActive(true);
     }
 
     IEnumerator SpawnWave(WaveData wave)
@@ -80,7 +95,15 @@ public class WaveSpawner : MonoBehaviour
             );
 
             Enemy enemy = obj.GetComponent<Enemy>();
-            enemy.Init(spawn.enemy, pathPoints, this);
+
+            if (enemy != null)
+            {
+                enemy.Init(
+                    spawn.enemy,
+                    pathPoints,
+                    this
+                );
+            }
 
             yield return new WaitForSeconds(spawn.delayAfterSpawn);
         }
@@ -89,5 +112,8 @@ public class WaveSpawner : MonoBehaviour
     public void EnemyFinished()
     {
         enemiesAlive--;
+
+        if (enemiesAlive < 0)
+            enemiesAlive = 0;
     }
 }

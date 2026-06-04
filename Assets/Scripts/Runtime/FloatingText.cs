@@ -57,7 +57,7 @@ public class FloatingText : MonoBehaviour
                 break;
 
             case FloatingTextType.Resource:
-                text.color = Color.yellow;
+                text.color = Color.magenta;
                 break;
 
             case FloatingTextType.Heal:

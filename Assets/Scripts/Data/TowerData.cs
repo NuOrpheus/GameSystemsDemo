@@ -18,8 +18,37 @@ public enum TowerEffectType
     Burn,
     Resource
 }
+[System.Serializable]
+public class TowerUpgradeLevel
+{
+    [Header("General")]
+    public string levelName = "Level 2";
+    public int upgradeCost = 100;
 
+    [Header("Combat")]
+    public int damageBonus = 5;
+    public float rangeBonus = 0.5f;
+    public float fireRateBonus = 0.25f;
+    public int splashDamageBonus = 5;
+    public float splashRadiusBonus = 0.25f;
+
+    [Header("Status Effects")]
+    public float slowMultiplierBonus = 0f;
+    public float slowDurationBonus = 0f;
+    public int poisonDamagePerTickBonus = 0;
+    public float poisonDurationBonus = 0f;
+    public float poisonTickRateMultiplier = 1f;
+    public float stunDurationBonus = 0f;
+    public int burnDamagePerTickBonus = 0;
+    public float burnDurationBonus = 0f;
+    public float burnTickRateMultiplier = 1f;
+
+    [Header("Economy")]
+    public int resourceGainBonus = 2;
+    public float resourceIntervalMultiplier = 1f;
+}
 [CreateAssetMenu(menuName = "TD/Tower Data")]
+
 public class TowerData : ScriptableObject
 {
     [Header("Basic Info")]
@@ -70,4 +99,7 @@ public class TowerData : ScriptableObject
     [Header("Resource Generator")]
     public int resourceGain = 5;
     public float resourceInterval = 5f;
+
+    [Header("Upgrades")]
+    public TowerUpgradeLevel[] upgradeLevels;
 }

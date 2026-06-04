@@ -28,8 +28,9 @@ MonoBehaviour:
   poisonDamagePerTick: 2
   poisonDuration: 4
   poisonTickRate: 1
-  splashRadius: 1.5
+  splashRadius: 1
   splashDamage: 10
+  splashImpactPrefab: {fileID: 827713800285731280, guid: c339da8396c4b5c49b767d055b6d8b98, type: 3}
   stunDuration: 1
   burnDamagePerTick: 5
   burnDuration: 2

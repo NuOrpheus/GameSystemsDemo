@@ -6,12 +6,11 @@ public class Enemy : MonoBehaviour
 {
     public EnemyData data;
 
-    [Header("Effects")]
+    [Header("Status Effect Prefabs")]
     public GameObject fireEffectPrefab;
     public GameObject poisonEffectPrefab;
     public GameObject slowEffectPrefab;
     public GameObject stunEffectPrefab;
-    public GameObject splashEffectPrefab;
 
     private GameObject activeFireEffect;
     private GameObject activePoisonEffect;
@@ -100,12 +99,17 @@ public class Enemy : MonoBehaviour
     void ReachEnd()
     {
         if (isDead) return;
-        isDead = true;
 
+        isDead = true;
         CleanupEffects();
 
         if (HealthManager.Instance != null)
             HealthManager.Instance.TakeDamage(data.livesDamage);
+
+        if (WaveAnalyticsManager.Instance != null)
+        {
+            WaveAnalyticsManager.Instance?.RecordEnemyReachedEnd(data.livesDamage);
+        }
 
         if (spawner != null)
             spawner.EnemyFinished();
@@ -146,6 +150,11 @@ public class Enemy : MonoBehaviour
         ApplyDamage(amount, FloatingTextType.Normal);
     }
 
+    public void TakeSplashDamage(int amount)
+    {
+        ApplyDamage(amount, FloatingTextType.Normal);
+    }
+
     void ApplyDamage(int amount, FloatingTextType textType)
     {
         if (isDead)
@@ -169,12 +178,17 @@ public class Enemy : MonoBehaviour
     void Die()
     {
         if (isDead) return;
-        isDead = true;
 
+        isDead = true;
         CleanupEffects();
 
         if (ResourceManager.Instance != null)
             ResourceManager.Instance.Add(data.reward);
+
+        if (WaveAnalyticsManager.Instance != null)
+        {
+            WaveAnalyticsManager.Instance?.RecordEnemyKilled(data.reward);
+        }
 
         if (spawner != null)
             spawner.EnemyFinished();
@@ -183,7 +197,13 @@ public class Enemy : MonoBehaviour
             AudioManager.Instance.Play(AudioManager.Instance.enemyDeath, 0.5f);
 
         if (CameraShake.Instance != null)
-            CameraShake.Instance.Shake(0.08f, 0.05f, 10);
+        {
+            CameraShake.Instance.Shake(
+                0.08f,
+                0.05f,
+                10
+            );
+        }
 
         Destroy(gameObject);
     }
@@ -208,20 +228,6 @@ public class Enemy : MonoBehaviour
         stunTimer = duration;
 
         StartStunEffect();
-    }
-
-    public void ApplySplashVisual()
-    {
-        if (splashEffectPrefab == null)
-            return;
-
-        GameObject splash = Instantiate(
-            splashEffectPrefab,
-            transform.position,
-            Quaternion.identity
-        );
-
-        Destroy(splash, 1f);
     }
 
     public void ApplyPoison(
