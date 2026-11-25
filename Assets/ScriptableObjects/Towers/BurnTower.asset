@@ -18,18 +18,18 @@ MonoBehaviour:
   cost: 100
   sellValue: 75
   range: 5
-  fireRate: 5
+  fireRate: 8
   damage: 0
-  projectileSpeed: 5
+  projectileSpeed: 3
   targetMode: 0
-  effectType: 5
+  effectType: 3
   slowMultiplier: 0.1
   slowDuration: 2
   poisonDamagePerTick: 2
   poisonDuration: 4
   poisonTickRate: 1
-  splashRadius: 1.5
-  splashDamage: 10
+  splashRadius: 0.6
+  splashDamage: 4
   splashImpactPrefab: {fileID: 827713800285731280, guid: c339da8396c4b5c49b767d055b6d8b98, type: 3}
   stunDuration: 1
   burnDamagePerTick: 5
