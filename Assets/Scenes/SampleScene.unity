@@ -1839,6 +1839,16 @@ MonoBehaviour:
   pathPoints:
   - {fileID: 307475428}
   - {fileID: 1658305306}
+  - {fileID: 1302977897}
+  - {fileID: 212236402}
+  - {fileID: 594106492}
+  - {fileID: 1851365230}
+  - {fileID: 822217905}
+  - {fileID: 327954178}
+  - {fileID: 1552035811}
+  - {fileID: 584038757}
+  - {fileID: 361162062}
+  - {fileID: 1800704682}
   waveUI: {fileID: 452660054}
   startWaveButton: {fileID: 472649870}
   panel: {fileID: 1967237851}
